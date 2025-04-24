@@ -15,4 +15,25 @@ public class ClientThread extends Thread{
         this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
     }
+
+    @Override
+    public void run() {
+        try {
+            while(true) {
+
+                    String response = input.readLine();
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                input.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
