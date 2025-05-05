@@ -10,7 +10,7 @@ public class ClientThread extends Thread{
     private Socket socket;
     private BufferedReader input;
 
-    private ClientThread(Socket s) throws IOException {
+    public ClientThread(Socket s) throws IOException {
         this.socket = s;
         this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
