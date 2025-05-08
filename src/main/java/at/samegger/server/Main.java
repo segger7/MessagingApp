@@ -14,7 +14,7 @@ public class Main {
             threadList.add(serverThread);
             serverThread.start();
         } catch(Exception e) {
-            System.out.println("Error occured in main of server: " + e.getStackTrace());
+            System.out.println("Error occurred in main of server: " + e.getStackTrace());
 
         }
     }

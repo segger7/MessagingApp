@@ -34,7 +34,7 @@ public class ServerThread extends Thread{
 
             }
         } catch(Exception e) {
-            System.out.println("Error occured in main of server " + e.getStackTrace());
+            System.out.println("Error occurred in main of server " + e.getStackTrace());
 
         }
     }
