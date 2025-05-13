@@ -26,12 +26,14 @@ public class UserDAO implements DAOInterface<User> {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            resultSet.next();
-            User user = new User(
-                    resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"));
-            return user;
+            if(resultSet.next()) {
+                User user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"));
+                return user;
+            }
+
 
         } catch(SQLException sqlException) {
             System.out.println("Datenbankfehler: " + sqlException);

@@ -27,12 +27,14 @@ public class ChatDAO implements DAOInterface<Chat>{
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            resultSet.next();
-            Chat chat = new Chat(
-                    resultSet.getInt("id"),
-                    resultSet.getString("chatname"),
-                    resultSet.getBoolean("isGroup"));
-            return chat;
+            if(resultSet.next()) {
+                Chat chat = new Chat(
+                        resultSet.getInt("id"),
+                        resultSet.getString("chatname"),
+                        resultSet.getBoolean("isGroup"));
+                return chat;
+            }
+
 
         } catch(SQLException sqlException) {
             System.out.println("Datenbankfehler: " + sqlException);

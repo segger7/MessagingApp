@@ -33,13 +33,15 @@ public class MessageDAO implements DAOInterface<Message>{
             ResultSet resultSet = preparedStatement.executeQuery();
 
 
-            resultSet.next();
-            Message message = new Message(
-                    resultSet.getInt("id"),
-                    resultSet.getString("text"),
-                    chatDAO.findByID(resultSet.getInt("chat_id")),
-                    userDAO.findByID(resultSet.getInt("sender_id")));
-            return message;
+            if(resultSet.next()) {
+                Message message = new Message(
+                        resultSet.getInt("id"),
+                        resultSet.getString("text"),
+                        chatDAO.findByID(resultSet.getInt("chat_id")),
+                        userDAO.findByID(resultSet.getInt("sender_id")));
+                return message;
+            }
+
 
         } catch(SQLException sqlException) {
             System.out.println("Datenbankfehler: " + sqlException);
