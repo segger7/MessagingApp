@@ -21,6 +21,7 @@ public class MessageDAO implements DAOInterface<Message>{
     public MessageDAO() throws SQLException, ClassNotFoundException {
         this.con = SqlDatabaseConnection.getConnection("jdbc:mysql://localhost:3306/messagingapp","root","");
         userDAO = new UserDAO();
+        chatDAO = new ChatDAO();
     }
 
     @Override
