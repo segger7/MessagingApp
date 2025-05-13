@@ -11,6 +11,11 @@ public class User {
         this.name = name;
     }
 
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }
@@ -33,5 +38,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

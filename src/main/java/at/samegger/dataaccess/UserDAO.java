@@ -21,7 +21,7 @@ public class UserDAO implements DAOInterface<User> {
     @Override
     public User findByID(Integer id) {
         try {
-            String sql = "SELECT * FROM students WHERE id = ?";
+            String sql = "SELECT * FROM users WHERE id = ?";
             PreparedStatement preparedStatement = con.prepareStatement(sql);
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -63,17 +63,22 @@ public class UserDAO implements DAOInterface<User> {
     }
 
     @Override
-    public void save(User user) {
+    public User insert(User user) {
         if(user != null) {
             try{
-                String sql = "INSERT INTO users (id, name, email) VALUES (?, ?, ?)";
+                String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                preparedStatement.setInt(1, user.getId());
-                preparedStatement.setString(2, user.getName());
-                preparedStatement.setString(3, user.getEmail());
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(2, user.getEmail());
 
                 preparedStatement.executeUpdate();
 
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if(generatedKeys.next()) {
+                    return this.findByID(generatedKeys.getInt(1));
+                } else {
+                    return user;
+                }
 
             } catch (SQLException e) {
                 System.out.println("Datenbankfehler: " + e);
@@ -81,7 +86,7 @@ public class UserDAO implements DAOInterface<User> {
         } else {
             System.out.println("User konnte nich hinzugefügt werden, null");
         }
-
+        return user;
     }
 
     @Override
