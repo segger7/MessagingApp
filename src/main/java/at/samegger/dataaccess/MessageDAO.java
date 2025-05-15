@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class MessageDAO implements DAOInterface<Message>{
                         resultSet.getInt("id"),
                         resultSet.getString("text"),
                         chatDAO.findByID(resultSet.getInt("chat_id")),
-                        userDAO.findByID(resultSet.getInt("sender_id")));
+                        userDAO.findByID(resultSet.getInt("sender_id")),
+                        (LocalDateTime) resultSet.getObject("sentAt"));
                 return message;
             }
 
@@ -63,7 +65,8 @@ public class MessageDAO implements DAOInterface<Message>{
                         result.getInt("id"),
                         result.getString("text"),
                         chatDAO.findByID(result.getInt("chat_id")),
-                        userDAO.findByID(result.getInt("sender_id")));
+                        userDAO.findByID(result.getInt("sender_id")),
+                        (LocalDateTime) result.getObject("sentAt"));
                 messages.add(message);
             }
             return messages;
@@ -78,11 +81,12 @@ public class MessageDAO implements DAOInterface<Message>{
     public Message insert(Message message) {
         if(message != null) {
             try{
-                String sql = "INSERT INTO messages (text, chat_id, sender_id) VALUES (?, ?, ?)";
+                String sql = "INSERT INTO messages (text, chat_id, sender_id, sentAt) VALUES (?, ?, ?, ?)";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, message.getText());
                 preparedStatement.setInt(2, message.getChat().getId());
                 preparedStatement.setInt(3, message.getSender().getId());
+                preparedStatement.setObject(4, message.getSentAt());
 
                 preparedStatement.executeUpdate();
 
@@ -106,11 +110,13 @@ public class MessageDAO implements DAOInterface<Message>{
     public void update(Message message) {
         if(message != null) {
             try{
-                String sql = "UPDATE messages text= ?, chat_id = ?, sender_id = ? WHERE id = ?";
+                String sql = "UPDATE messages text= ?, chat_id = ?, sender_id = ?, sentAt = ? WHERE id = ?";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, message.getText());
                 preparedStatement.setInt(2, message.getChat().getId());
                 preparedStatement.setInt(3, message.getSender().getId());
+                preparedStatement.setObject(4, message.getSentAt());
+                preparedStatement.setInt(5, message.getId());
 
                 preparedStatement.executeUpdate();
 
@@ -136,3 +142,4 @@ public class MessageDAO implements DAOInterface<Message>{
         }
     }
 }
+*/
