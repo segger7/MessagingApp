@@ -50,7 +50,7 @@ public class MessageDAO implements DAOInterface<Message>{
     }
 
     @Override
-    public List findAll() {
+    public List<Message> findAll() {
         String sql = "SELECT * FROM messages";
         try{
             PreparedStatement preparedStatement = con.prepareStatement(sql);
