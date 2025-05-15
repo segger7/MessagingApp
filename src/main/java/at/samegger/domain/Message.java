@@ -14,6 +14,12 @@ public class Message {
         this.sender = sender;
     }
 
+    public Message(String text, Chat chat, User sender) {
+        this.text = text;
+        this.chat = chat;
+        this.sender = sender;
+    }
+
     public int getId() {
         return id;
     }

@@ -14,6 +14,11 @@ public class Chat {
         this.isGroup = isGroup;
     }
 
+    public Chat(String chatname, boolean isGroup) {
+        this.chatname = chatname;
+        this.isGroup = isGroup;
+    }
+
     public int getId() {
         return id;
     }
@@ -36,5 +41,14 @@ public class Chat {
 
     public void setGroup(boolean group) {
         isGroup = group;
+    }
+
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "id=" + id +
+                ", chatname='" + chatname + '\'' +
+                ", isGroup=" + isGroup +
+                '}';
     }
 }
