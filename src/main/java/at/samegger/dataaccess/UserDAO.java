@@ -30,7 +30,8 @@ public class UserDAO implements DAOInterface<User> {
                 User user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("email"));
+                        resultSet.getString("email"),
+                        resultSet.getString("password"));
                 return user;
             }
 
@@ -52,7 +53,8 @@ public class UserDAO implements DAOInterface<User> {
                 User user = new User(
                         result.getInt("id"),
                         result.getString("name"),
-                        result.getString("email")
+                        result.getString("email"),
+                        result.getString("password")
                 );
                 users.add(user);
             }
@@ -68,10 +70,11 @@ public class UserDAO implements DAOInterface<User> {
     public User insert(User user) {
         if(user != null) {
             try{
-                String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+                String sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, user.getName());
                 preparedStatement.setString(2, user.getEmail());
+                preparedStatement.setString(3, user.getPassword());
 
                 preparedStatement.executeUpdate();
 
@@ -95,11 +98,12 @@ public class UserDAO implements DAOInterface<User> {
     public void update(User user) {
         if(user != null) {
             try{
-                String sql = "UPDATE users name= ?, email = ? WHERE id = ?";
+                String sql = "UPDATE users name= ?, email = ?, password = ? WHERE id = ?";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, user.getName());
                 preparedStatement.setString(2, user.getEmail());
-                preparedStatement.setInt(3, user.getId());
+                preparedStatement.setString(3, user.getPassword());
+                preparedStatement.setInt(4, user.getId());
 
                 preparedStatement.executeUpdate();
 
