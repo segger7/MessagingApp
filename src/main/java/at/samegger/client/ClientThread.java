@@ -22,7 +22,7 @@ public class ClientThread extends Thread{
             while(true) {
 
                     String response = input.readLine();
-
+                    System.out.println(response);
 
             }
         } catch (IOException e) {

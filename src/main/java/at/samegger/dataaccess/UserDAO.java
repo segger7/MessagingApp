@@ -42,6 +42,29 @@ public class UserDAO implements DAOInterface<User> {
         return null;
     }
 
+    public User findByUserName(String username) {
+        try {
+            String sql = "SELECT * FROM users WHERE name = ?";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()) {
+                User user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"));
+                return user;
+            }
+
+
+        } catch(SQLException sqlException) {
+            System.out.println("Datenbankfehler: " + sqlException);
+        }
+        return null;
+    }
+
     @Override
     public List<User> findAll() {
         String sql = "SELECT * FROM users";
