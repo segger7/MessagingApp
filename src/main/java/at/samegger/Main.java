@@ -8,6 +8,7 @@ import at.samegger.domain.Message;
 import at.samegger.domain.User;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
@@ -26,7 +27,7 @@ public class Main {
             chat = chatDAO.insert(chat);
             System.out.println(chat);
 
-            Message message = new Message("Hallo das ist eine Testnachricht", chat, usersInDatenbank.getFirst());
+            Message message = new Message("Hallo das ist eine Testnachricht", chat, usersInDatenbank.getFirst(), LocalDateTime.now());
             System.out.println(message);
             message = messageDAO.insert(message);
             System.out.println(message);

@@ -142,4 +142,3 @@ public class MessageDAO implements DAOInterface<Message>{
         }
     }
 }
-*/
