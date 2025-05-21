@@ -48,13 +48,15 @@ public class ServerThread extends Thread{
                     String username = parts[1];
                     String password = parts[2];
                     User user = userDAO.findByUserName(username);
-                    if(user != null) {
-                        if(user.getPassword().equals(password)) {
-                            output.println("angemeldet!");
-                            System.out.println(incoming);
+                    if (user != null) {
+                        if (user.getPassword().equals(password)) {
+                            output.println("LOGIN_SUCCESS|Willkommen " + user.getName());
+                            //this.loggedInUser = user;
                         } else {
-                            output.println("Falsche Anmeldedaten!");
+                            output.println("LOGIN_FAILED|Falsches Passwort");
                         }
+                    } else {
+                        output.println("LOGIN_FAILED|Benutzer existiert nicht!");
                     }
                 } else if(incoming.startsWith("MESSAGE|")) {
                     printToAllClients(incoming);

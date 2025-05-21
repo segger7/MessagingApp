@@ -22,11 +22,12 @@ public class CLI {
         this.output = output;
         scanner = new Scanner(System.in);
         isConnectedToUser = false;
+        userInput = "";
     }
 
     public void start() throws IOException {
 
-        do {
+        while (!userInput.equals("exit")) {
             if (!isConnectedToUser) {
                 System.out.println("Enter your Username");
                 String username = scanner.nextLine();
@@ -36,21 +37,18 @@ public class CLI {
                 output.println(userInput);
                 if(input.readLine().equals("angemeldet!")) {
                     isConnectedToUser = true;
+                    System.out.println("Erfolgreich angemeldet");
                 }
-                if(userInput.equals("exit")) {
-                    break;
-                }
-            }
-            else {
+            } else {
                 String message = ("("+ userName +")" + " message: "); //Schauen warum es nicht hier hin springt DEBUGGER
                 System.out.println(message);
                 userInput = "MESSAGE|" + scanner.nextLine();
                 output.println(message + " " + userInput);
-                if(userInput.equals("exit")) {
-                    break;
-                }
             }
-        } while (!userInput.equals("exit"));
+            if(userInput.equals("exit")) {
+                break;
+            }
+        }
 
     }
 }
