@@ -3,6 +3,8 @@ package at.samegger.client;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -29,12 +31,26 @@ public class ClientMain {
                         loginLatch.countDown(); // Login-Versuch abgeschlossen
                     },
                     response -> {
-                        System.out.println("Server: " + response); // z.B. Chat-Nachrichten
+                        if (response.startsWith("MESSAGE|")) {
+                            String messageContent = response.substring("MESSAGE|".length());
+                            int start = messageContent.indexOf("(");
+                            int end = messageContent.indexOf(")");
+
+                            if (start != -1 && end != -1 && end > start) {
+                                String sender = messageContent.substring(start + 1, end);
+                                String message = messageContent.substring(end + 2); // +2 für ") "
+                                System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.uu|HH:mm")) + "] " + "[" + sender + "]: " + message);
+                            } else {
+                                System.out.println("Unformatierte Nachricht: " + messageContent);
+                            }
+                        } else {
+                            System.out.println("Server: " + response);
+                        }
                     }
             );
             clientThread.start();
 
-            // Login-Versuch
+            // Login Dialog
             System.out.println("Enter your Username:");
             String username = scanner.nextLine();
             System.out.println("Enter your Password:");
@@ -49,7 +65,7 @@ public class ClientMain {
                 return;
             }
 
-            // Ab hier bist du eingeloggt
+            // Ab hier ist man eingeloggt
             System.out.println("Du kannst jetzt Nachrichten senden. Gib 'exit' ein zum Beenden.");
             while (true) {
                 String message = scanner.nextLine();

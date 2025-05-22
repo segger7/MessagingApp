@@ -3,6 +3,7 @@ package at.samegger.server;
 import at.samegger.dataaccess.ChatDAO;
 import at.samegger.dataaccess.MessageDAO;
 import at.samegger.dataaccess.UserDAO;
+import at.samegger.domain.Message;
 import at.samegger.domain.User;
 
 import java.io.BufferedReader;
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ServerThread extends Thread{
@@ -62,7 +64,14 @@ public class ServerThread extends Thread{
                     printToAllClients(incoming);
                     System.out.println("Server received " + incoming);
 
-                    //Hier weiter mit den Messages arbeiten
+                    try{
+                        String messageContent = incoming.substring("MESSAGE|".length());
+                        String sender = messageContent.substring(messageContent.indexOf("(")+1,messageContent.indexOf(")"));
+                        String message = messageContent.substring(messageContent.indexOf(")")+2);
+                        messageDAO.insert(new Message(message, chatDAO.findByID(1), userDAO.findByUserName(sender), LocalDateTime.now() ));
+                    } catch (Exception e) {
+                        System.out.println("Message Datenbankfehler!: " + e.getStackTrace());
+                    }
 
 
                 }
