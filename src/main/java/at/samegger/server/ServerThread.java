@@ -46,7 +46,7 @@ public class ServerThread extends Thread{
                 } else if(incoming == null) {
                     break;
                 } else if(incoming.startsWith("LOGIN|")) {
-                    String[] parts = incoming.split("\\|");
+                    String[] parts = incoming.split("\\|"); //Die Nachricht wird in Benutzer und Password aufgeteilt
                     String username = parts[1];
                     String password = parts[2];
                     User user = userDAO.findByUserName(username);

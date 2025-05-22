@@ -33,16 +33,7 @@ public class ClientMain {
                     response -> {
                         if (response.startsWith("MESSAGE|")) {
                             String messageContent = response.substring("MESSAGE|".length());
-                            int start = messageContent.indexOf("(");
-                            int end = messageContent.indexOf(")");
-
-                            if (start != -1 && end != -1 && end > start) {
-                                String sender = messageContent.substring(start + 1, end);
-                                String message = messageContent.substring(end + 2); // +2 für ") "
-                                System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.uu|HH:mm")) + "] " + "[" + sender + "]: " + message);
-                            } else {
-                                System.out.println("Unformatierte Nachricht: " + messageContent);
-                            }
+                            System.out.println(formatMessage(messageContent));
                         } else {
                             System.out.println("Server: " + response);
                         }
@@ -51,13 +42,7 @@ public class ClientMain {
             clientThread.start();
 
             // Login Dialog
-            System.out.println("Enter your Username:");
-            String username = scanner.nextLine();
-            System.out.println("Enter your Password:");
-            String password = scanner.nextLine();
-            userName = username;
-
-            output.println("LOGIN|" + username + "|" + password);
+            output.println(loginDialog());
             loginLatch.await(); // Warten auf Antwort
 
             if (!loginSuccess[0]) {
@@ -79,5 +64,28 @@ public class ClientMain {
         } catch (Exception e) {
             System.out.println("Client-Fehler: " + e.getMessage());
         }
+    }
+
+    private static String formatMessage(String messageContent) {
+        int start = messageContent.indexOf("(");
+        int end = messageContent.indexOf(")");
+
+        if (start != -1 && end != -1 && end > start) {
+            String sender = messageContent.substring(start + 1, end);
+            String message = messageContent.substring(end + 2);
+            return "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + "] " + "[" + sender + "]: " + message;
+        } else {
+            return "Unformatierte Nachricht: " + messageContent;
+        }
+    }
+
+    private static String loginDialog() {
+        System.out.println("Enter your Username:");
+        String username = scanner.nextLine();
+        System.out.println("Enter your Password:");
+        String password = scanner.nextLine();
+        userName = username;
+
+        return "LOGIN|" + username + "|" + password;
     }
 }
