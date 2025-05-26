@@ -60,6 +60,20 @@ public class ServerThread extends Thread{
                     } else {
                         output.println("LOGIN_FAILED|Benutzer existiert nicht!");
                     }
+                } else if (incoming.startsWith("REGISTER|")) {
+                    try {
+                        String[] parts = incoming.split("\\|"); //Die Nachricht wird in Benutzer und Password aufgeteilt
+                        String username = parts[1];
+                        String password = parts[2];
+                        String email = parts[3];
+                        User user = new User(email, username, password);
+                        userDAO.insert(user);
+
+                        output.println("REGISTER_SUCCESS|Der Nutzer " + user.getName() + " wurde erfolgreich angelegt! Sie können nun chatten!");
+                    } catch(Exception e) {
+                        output.println("REGISTER_FAILED|Der Nutzer konnte nicht angemeldet werden! Fehler");
+                    }
+
                 } else if(incoming.startsWith("MESSAGE|")) {
                     printToAllClients(incoming);
                     System.out.println("Server received " + incoming);
@@ -74,6 +88,8 @@ public class ServerThread extends Thread{
                     }
 
 
+                } else {
+                    output.println("Falsche Eingabe!");
                 }
 
             }

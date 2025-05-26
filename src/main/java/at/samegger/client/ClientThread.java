@@ -12,12 +12,14 @@ public class ClientThread extends Thread{
     private BufferedReader input;
     private final Consumer<String> onLoginResponse;
     private final Consumer<String> onMessage;
+    private final Consumer<String> onRegisterResponse;
 
-    public ClientThread(Socket s, Consumer<String> onLoginResponse, Consumer<String> onMessage) throws IOException {
+    public ClientThread(Socket s, Consumer<String> onLoginResponse, Consumer<String> onMessage, Consumer<String> onRegisterResponse) throws IOException {
         this.socket = s;
         this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.onLoginResponse = onLoginResponse;
         this.onMessage = onMessage;
+        this.onRegisterResponse = onRegisterResponse;
     }
 
     @Override
@@ -27,6 +29,8 @@ public class ClientThread extends Thread{
             while ((response = input.readLine()) != null) {
                 if (response.startsWith("LOGIN_SUCCESS|") || response.startsWith("LOGIN_FAILED|")) {
                     onLoginResponse.accept(response);
+                } else if (response.startsWith("REGISTER_SUCCESS|") || response.startsWith("REGISTER_FAILED|")) {
+                    onRegisterResponse.accept(response);
                 } else {
                     onMessage.accept(response);
                 }

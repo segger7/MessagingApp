@@ -37,12 +37,29 @@ public class ClientMain {
                         } else {
                             System.out.println("Server: " + response);
                         }
+                    },
+                    response -> {
+                        System.out.println(response.split("\\|")[1]);
+                        if (response.startsWith("REGISTER_SUCCESS|")) {
+                            loginSuccess[0] = true;
+                        } else {
+                            System.out.println("Server: " + response);
+                        }
+                        loginLatch.countDown();
                     }
             );
             clientThread.start();
 
-            // Login Dialog
-            output.println(loginDialog());
+            // Entweder registrieren oder anmelden
+
+            System.out.println("Wilkommen bei PingMe - Wollen sie sich anmelden (1) oder neu registrieren (2)?");
+            String eingabe = scanner.nextLine();
+            if(eingabe.equals("1")) {
+                output.println(loginDialog());
+            } else if(eingabe.equals("2")) {
+                output.println(registerDialog());
+            }
+
             loginLatch.await(); // Warten auf Antwort
 
             if (!loginSuccess[0]) {
@@ -80,12 +97,25 @@ public class ClientMain {
     }
 
     private static String loginDialog() {
-        System.out.println("Enter your Username:");
+        System.out.println("Gib deinen Username ein:");
         String username = scanner.nextLine();
-        System.out.println("Enter your Password:");
+        System.out.println("Gib dein Password ein:");
         String password = scanner.nextLine();
         userName = username;
 
         return "LOGIN|" + username + "|" + password;
+    }
+
+    private static String registerDialog() {
+        System.out.println("Erstelle einen neuen Username:");
+        String username = scanner.nextLine();
+        System.out.println("Erstelle ein neues Password:");
+        String password = scanner.nextLine();
+        System.out.println("Gib deine E-Mail Adresse ein:");
+        String email = scanner.nextLine();
+
+        userName = username;
+
+        return "REGISTER|" + username + "|" + password + "|" + email;
     }
 }
