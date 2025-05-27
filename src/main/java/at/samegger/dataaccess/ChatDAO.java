@@ -64,6 +64,52 @@ public class ChatDAO implements DAOInterface<Chat>{
         return List.of();
     }
 
+    public List<Chat> findAllByUser(int userID) {
+        String sql = "SELECT chats.id, chats.chatname, chats.isGroup FROM chats JOIN chatuser ON chats.id = chatuser.chat_id WHERE chatuser.user_id = ?;";
+        try{
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, userID);
+            ResultSet result = preparedStatement.executeQuery();
+            List<Chat> chats = new ArrayList<>();
+            while(result.next()) {
+                Chat chat = new Chat(
+                        result.getInt("id"),
+                        result.getString("chatname"),
+                        result.getBoolean("isGroup"));
+                chats.add(chat);
+            }
+            return chats;
+
+        } catch (SQLException e) {
+            System.out.println("Datenbankfehler: " + e);
+        }
+        return List.of();
+    }
+
+    public List<User> findAllUsersFromChat(int chatID) {
+        String sql = "SELECT users.id, users.name, users.email, users.password FROM users JOIN chatuser ON users.id=chatuser.user_id WHERE chatuser.chat_id = ?;";
+        try{
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, chatID);
+            ResultSet result = preparedStatement.executeQuery();
+            List<User> users = new ArrayList<>();
+            while(result.next()) {
+                User user = new User(
+                        result.getInt("id"),
+                        result.getString("email"),
+                        result.getString("name"),
+                        result.getString("password")
+                );
+                users.add(user);
+            }
+            return users;
+
+        } catch (SQLException e) {
+            System.out.println("Datenbankfehler: " + e);
+        }
+        return List.of();
+    }
+
     @Override
     public Chat insert(Chat chat) {
         if(chat != null) {

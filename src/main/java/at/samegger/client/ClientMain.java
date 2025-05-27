@@ -31,11 +31,11 @@ public class ClientMain {
                         loginLatch.countDown(); // Login-Versuch abgeschlossen
                     },
                     response -> {
-                        if (response.startsWith("MESSAGE|")) {
+                        if (response.startsWith("MESSAGE|")) { //In Chats unterteilen!
                             String messageContent = response.substring("MESSAGE|".length());
                             System.out.println(formatMessage(messageContent));
                         } else {
-                            System.out.println("Server: " + response);
+                            System.out.println(response);
                         }
                     },
                     response -> {
@@ -50,7 +50,7 @@ public class ClientMain {
             );
             clientThread.start();
 
-            // Entweder registrieren oder anmelden
+            // Entweder registrieren oder anmelden (Login oder Register Dialog
 
             System.out.println("Wilkommen bei PingMe - Wollen sie sich anmelden (1) oder neu registrieren (2)?");
             String eingabe = scanner.nextLine();
@@ -68,15 +68,28 @@ public class ClientMain {
             }
 
             // Ab hier ist man eingeloggt
-            System.out.println("Du kannst jetzt Nachrichten senden. Gib 'exit' ein zum Beenden.");
+
+
+
             while (true) {
-                String message = scanner.nextLine();
-                if (message.equalsIgnoreCase("exit")) {
-                    output.println("exit");
+                String chatAuswahl = chatAuswahlDialog();
+                output.println(chatAuswahl);
+
+                if(chatAuswahl.equalsIgnoreCase("exit")) {
                     break;
                 }
-                output.println("MESSAGE|(" + userName + ") " + message);
+
+                System.out.println("Du kannst jetzt Nachrichten senden. Gib 'exit' ein zum Beenden.");
+                while (true) {
+                    String message = scanner.nextLine();
+                    if (message.equalsIgnoreCase("exit")) {
+                        output.println("exit");
+                        break;
+                    }
+                    output.println("MESSAGE|(" + userName + ") " + message);
+                }
             }
+
 
         } catch (Exception e) {
             System.out.println("Client-Fehler: " + e.getMessage());
@@ -117,5 +130,13 @@ public class ClientMain {
         userName = username;
 
         return "REGISTER|" + username + "|" + password + "|" + email;
+    }
+
+    private static String chatAuswahlDialog() {
+        System.out.println("--- Deine Chats ---");
+        output.println("CHATSREQUEST");
+
+        String auswahl = scanner.nextLine();
+        return "CHAT_PICKED|" + auswahl;
     }
 }

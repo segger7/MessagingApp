@@ -7,13 +7,15 @@ import java.util.ArrayList;
 public class ServerMain {
 
     public static void main(String[] args) {
-        ArrayList<ServerThread> threadList = new ArrayList<>();
+        ServerThread.setThreadList(new ArrayList<>());
         try(ServerSocket serverSocket = new ServerSocket(5000)) {
+            System.out.println("Server gestartet...");
             while(true) {
                 Socket socket = serverSocket.accept();
-                ServerThread serverThread = new ServerThread(socket, threadList);
-                threadList.add(serverThread);
+                ServerThread serverThread = new ServerThread(socket);
+                ServerThread.threadList.add(serverThread);
                 serverThread.start();
+                System.out.println("Nutzer online...");
             }
 
         } catch(Exception e) {
