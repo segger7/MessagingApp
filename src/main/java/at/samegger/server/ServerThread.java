@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +55,7 @@ public class ServerThread extends Thread{
 
             while(true) {
                 String incoming = input.readLine();
-                if(incoming.equals("exit")) {
-                    break;
-                } else if(incoming == null) {
+                if(incoming == null) {
                     break;
                 } else if(incoming.startsWith("LOGIN|")) {
                     String[] parts = incoming.split("\\|"); //Die Nachricht wird in Benutzer und Password aufgeteilt
@@ -160,7 +159,13 @@ public class ServerThread extends Thread{
                         chatUserDAO.insert(new ChatUser(userDAO.findByUserName(chatUserName), chat));
                     }
                     activeChat = chat;
-                } else {
+
+                } else if(incoming.startsWith("MESSAGES_REQUEST")) {
+                    for(Message m : messageDAO.getLatestFromChat(activeChat, 10)) {
+                        output.println("[" + m.getSentAt().format(DateTimeFormatter.ofPattern("dd.MM | HH:mm")) + "] " + "[" + m.getSender().getName() + "]: " + m.getText());
+                    }
+
+                }else {
                     output.println("Falsche Eingabe!");
                 }
 

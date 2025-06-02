@@ -141,4 +141,31 @@ public class MessageDAO implements DAOInterface<Message>{
             System.out.println("Datenbankfehler: " + e);
         }
     }
+
+    public List<Message> getLatestFromChat(Chat chat, int amount) {
+        String sql = "SELECT * FROM `messages` WHERE messages.chat_id=? ORDER BY messages.sentAt LIMIT ?;";
+        try{
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, chat.getId());
+            preparedStatement.setInt(2, amount);
+            ResultSet result = preparedStatement.executeQuery();
+            List<Message> messages = new ArrayList<>();
+
+
+            while(result.next()) {
+                Message message = new Message(
+                        result.getInt("id"),
+                        result.getString("text"),
+                        chatDAO.findByID(result.getInt("chat_id")),
+                        userDAO.findByID(result.getInt("sender_id")),
+                        (LocalDateTime) result.getObject("sentAt"));
+                messages.add(message);
+            }
+            return messages;
+
+        } catch (SQLException e) {
+            System.out.println("Datenbankfehler: " + e);
+        }
+        return List.of();
+    }
 }

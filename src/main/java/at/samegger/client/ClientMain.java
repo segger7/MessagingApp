@@ -86,6 +86,7 @@ public class ClientMain {
 
 
                 System.out.println("Du kannst jetzt Nachrichten senden. Gib 'exit' ein zum Beenden.");
+                output.println("MESSAGES_REQUEST");
                 while (true) {
 
                     String message = scanner.nextLine();
