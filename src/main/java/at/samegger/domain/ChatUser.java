@@ -12,6 +12,11 @@ public class ChatUser {
         this.chat = chat;
     }
 
+    public ChatUser(User user, Chat chat) {
+        this.user = user;
+        this.chat = chat;
+    }
+
     public int getId() {
         return id;
     }

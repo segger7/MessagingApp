@@ -31,9 +31,12 @@ public class ClientMain {
                         loginLatch.countDown(); // Login-Versuch abgeschlossen
                     },
                     response -> {
-                        if (response.startsWith("MESSAGE|")) { //In Chats unterteilen!
+                        if (response.startsWith("MESSAGE|")) {
                             String messageContent = response.substring("MESSAGE|".length());
                             System.out.println(formatMessage(messageContent));
+
+                        } else if (response.startsWith("CHAT_ERROR")) {
+                            System.exit(1);
                         } else {
                             System.out.println(response);
                         }
@@ -50,7 +53,7 @@ public class ClientMain {
             );
             clientThread.start();
 
-            // Entweder registrieren oder anmelden (Login oder Register Dialog
+            // Entweder registrieren oder anmelden (Login oder Register Dialog)
 
             System.out.println("Wilkommen bei PingMe - Wollen sie sich anmelden (1) oder neu registrieren (2)?");
             String eingabe = scanner.nextLine();
@@ -73,14 +76,18 @@ public class ClientMain {
 
             while (true) {
                 String chatAuswahl = chatAuswahlDialog();
-                output.println(chatAuswahl);
-
-                if(chatAuswahl.equalsIgnoreCase("exit")) {
-                    break;
+                if(chatAuswahl.endsWith("exit")) {
+                    return;
+                } else if(chatAuswahl.endsWith("neu")) {
+                    output.println(chatErstellDialog());
+                } else {
+                    output.println(chatAuswahl);
                 }
+
 
                 System.out.println("Du kannst jetzt Nachrichten senden. Gib 'exit' ein zum Beenden.");
                 while (true) {
+
                     String message = scanner.nextLine();
                     if (message.equalsIgnoreCase("exit")) {
                         output.println("exit");
@@ -88,6 +95,7 @@ public class ClientMain {
                     }
                     output.println("MESSAGE|(" + userName + ") " + message);
                 }
+
             }
 
 
@@ -138,5 +146,28 @@ public class ClientMain {
 
         String auswahl = scanner.nextLine();
         return "CHAT_PICKED|" + auswahl;
+    }
+
+    private static String chatErstellDialog() {
+        StringBuilder ausgabe = new StringBuilder();
+        ausgabe.append("CHAT_CREATE|");
+        System.out.println("Gib einen Namen für den Chat ein:");
+        String chatname = scanner.nextLine();
+        ausgabe.append(chatname + "|");
+        System.out.println("Soll es eine Gruppe sein? (J/N):");
+        if(scanner.nextLine().equals("J")) {
+            while(true) {
+                System.out.println("Gib alle Usernames ein. Wenn du fertig bist, schreibe x");
+                String userName = scanner.nextLine();
+                if(userName.equals("x")) {
+                    break;
+                }
+                ausgabe.append(userName + "|");
+            }
+        } else {
+            System.out.println("Gib den Username deines Gesprächspartner ein.");
+            ausgabe.append(scanner.nextLine() + "|");
+        }
+        return ausgabe.toString();
     }
 }

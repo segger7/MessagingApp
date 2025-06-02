@@ -78,8 +78,8 @@ public class ChatUserDAO implements DAOInterface<ChatUser>{
             try{
                 String sql = "INSERT INTO chatuser (user_id, chat_id) VALUES (?, ?)";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                preparedStatement.setInt(2, chatuser.getUser().getId());
-                preparedStatement.setInt(3, chatuser.getChat().getId());
+                preparedStatement.setInt(1, chatuser.getUser().getId());
+                preparedStatement.setInt(2, chatuser.getChat().getId());
 
                 preparedStatement.executeUpdate();
 

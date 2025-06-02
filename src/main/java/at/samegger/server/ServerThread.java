@@ -1,9 +1,11 @@
 package at.samegger.server;
 
 import at.samegger.dataaccess.ChatDAO;
+import at.samegger.dataaccess.ChatUserDAO;
 import at.samegger.dataaccess.MessageDAO;
 import at.samegger.dataaccess.UserDAO;
 import at.samegger.domain.Chat;
+import at.samegger.domain.ChatUser;
 import at.samegger.domain.Message;
 import at.samegger.domain.User;
 
@@ -24,6 +26,7 @@ public class ServerThread extends Thread{
     private UserDAO userDAO;
     private MessageDAO messageDAO;
     private ChatDAO chatDAO;
+    private ChatUserDAO chatUserDAO;
     private User loggedInUser;
     private List<Chat> userChats;
     public Chat activeChat;
@@ -34,6 +37,7 @@ public class ServerThread extends Thread{
         userDAO = new UserDAO();
         chatDAO = new ChatDAO();
         messageDAO = new MessageDAO();
+        chatUserDAO = new ChatUserDAO();
 
     }
 
@@ -117,15 +121,46 @@ public class ServerThread extends Thread{
                         chatausgabe.append(") \n");
 
                     }
-                    chatausgabe.append("Welchen Chat möchtest du auswählen? (Nummer)");
-                    output.println(chatausgabe.toString());
+                    chatausgabe.append("Wähle einen Chat aus! (Nummer), Oder erstelle einen neuen (neu)");
+                    output.println(chatausgabe);
 
                 } else if(incoming.startsWith("CHAT_PICKED")) {
                     String[] parts = incoming.split("\\|");
-                    int chatID = Integer.parseInt(parts[1]);
-                    activeChat = chatDAO.findByID(chatID);
+                    try {
+                        int chatID = Integer.parseInt(parts[1]);
+                        Chat newChat = chatDAO.findByID(chatID);
+                        if(newChat != null) {
+                            boolean containsChat = false;
+                            for(Chat c : userChats) {
+                                if(c.getId() == newChat.getId()) {
+                                    containsChat = true;
+                                    break;
+                                }
+                            }
+                            if(containsChat) {
+                                activeChat = newChat;
+                                //output.println("CHAT_SUCCESS");
+                            } else {
+                                output.println("CHAT_ERROR");
+                            }
+                        } else {
+                            output.println("CHAT_ERROR");
+                        }
+                    } catch (Exception e) {
+                        output.println("CHAT_ERROR");
+                    }
 
-                }else {
+                } else if (incoming.startsWith("CHAT_CREATE")) {
+                    String[] parts = incoming.split("\\|");
+                    Chat chat = new Chat(parts[1],false);
+                    chat = chatDAO.insert(chat);
+                    chatUserDAO.insert(new ChatUser(loggedInUser, chat));
+                    for(int i = 2; i<parts.length; i++) {
+                        String chatUserName = parts[i];
+                        chatUserDAO.insert(new ChatUser(userDAO.findByUserName(chatUserName), chat));
+                    }
+                    activeChat = chat;
+                } else {
                     output.println("Falsche Eingabe!");
                 }
 
