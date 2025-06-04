@@ -13,6 +13,7 @@ public class ClientMain {
     private static PrintWriter output;
     private static Scanner scanner;
     private static String userName;
+    private static boolean inAIChat;
 
     public static void main(String[] args) {
         try (Socket socket = new Socket("localhost", 5000)) {
@@ -80,6 +81,9 @@ public class ClientMain {
                     return;
                 } else if(chatAuswahl.endsWith("neu")) {
                     output.println(chatErstellDialog());
+                } else if(chatAuswahl.endsWith("AI")) {
+                    output.println("GEMINI_CHAT");
+                    inAIChat = true;
                 } else {
                     output.println(chatAuswahl);
                 }
@@ -92,9 +96,14 @@ public class ClientMain {
                     String message = scanner.nextLine();
                     if (message.equalsIgnoreCase("exit")) {
                         output.println("exit");
+                        inAIChat = false;
                         break;
                     }
-                    output.println("MESSAGE|(" + userName + ") " + message);
+                    if(inAIChat) {
+                        output.println("GEMINI_MESSAGE|" + message);
+                    } else {
+                        output.println("MESSAGE|(" + userName + ") " + message);
+                    }
                 }
 
             }

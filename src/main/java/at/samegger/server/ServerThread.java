@@ -1,5 +1,6 @@
 package at.samegger.server;
 
+import at.samegger.ai.GeminiClient;
 import at.samegger.dataaccess.ChatDAO;
 import at.samegger.dataaccess.ChatUserDAO;
 import at.samegger.dataaccess.MessageDAO;
@@ -31,6 +32,7 @@ public class ServerThread extends Thread{
     private User loggedInUser;
     private List<Chat> userChats;
     public Chat activeChat;
+    private final Chat AIChat = new Chat("Gemini",false);
 
 
     public ServerThread(Socket socket) throws SQLException, ClassNotFoundException {
@@ -105,6 +107,7 @@ public class ServerThread extends Thread{
                 } else if(incoming.startsWith("CHATSREQUEST")) {
                     userChats = chatDAO.findAllByUser(loggedInUser.getId());
                     StringBuilder chatausgabe = new StringBuilder();
+                    chatausgabe.append("[AI] [Gemini]\n");
                     for(Chat c : userChats) {
 
                             chatausgabe.append("[" + c.getId() + "] [" + c.getChatname() + "] (");
@@ -150,22 +153,35 @@ public class ServerThread extends Thread{
                     }
 
                 } else if (incoming.startsWith("CHAT_CREATE")) {
-                    String[] parts = incoming.split("\\|");
-                    Chat chat = new Chat(parts[1],false);
-                    chat = chatDAO.insert(chat);
-                    chatUserDAO.insert(new ChatUser(loggedInUser, chat));
-                    for(int i = 2; i<parts.length; i++) {
-                        String chatUserName = parts[i];
-                        chatUserDAO.insert(new ChatUser(userDAO.findByUserName(chatUserName), chat));
+                    try {
+                        String[] parts = incoming.split("\\|");
+                        Chat chat = new Chat(parts[1], false);
+                        chat = chatDAO.insert(chat);
+                        chatUserDAO.insert(new ChatUser(loggedInUser, chat));
+                        for (int i = 2; i < parts.length; i++) {
+                            String chatUserName = parts[i];
+                            chatUserDAO.insert(new ChatUser(userDAO.findByUserName(chatUserName), chat));
+                        }
+                        activeChat = chat;
+                    } catch (Exception e) {
+                        output.println("CHAT_ERROR");
                     }
-                    activeChat = chat;
-
                 } else if(incoming.startsWith("MESSAGES_REQUEST")) {
                     for(Message m : messageDAO.getLatestFromChat(activeChat, 10)) {
                         output.println("[" + m.getSentAt().format(DateTimeFormatter.ofPattern("dd.MM | HH:mm")) + "] " + "[" + m.getSender().getName() + "]: " + m.getText());
                     }
 
-                }else {
+                } else if(incoming.startsWith("GEMINI_MESSAGE")) {
+                    try{
+                        String messageContent = incoming.substring("GEMINI_MESSAGE|".length());
+                        String answer = GeminiClient.geminiQuestion(messageContent);
+                        output.println(answer);
+                    } catch (Exception e) {
+                        System.out.println("Gemini Fehler: " + e.getStackTrace());
+                    }
+                } else if(incoming.startsWith("GEMINI_CHAT")) {
+                    activeChat = AIChat;
+                } else {
                     output.println("Falsche Eingabe!");
                 }
 
